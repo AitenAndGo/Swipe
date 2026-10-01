@@ -494,10 +494,12 @@
             const p = document.createElement('div');
             p.classList.add('swipe-trail', color, dirClass);
 
-            p.style.left = (startX * 45 + 15) + 'px';
-            p.style.top = (startY * 45 + 15) + 'px';
-            p.style.width = '39px';
-            p.style.height = '39px';
+            const cellSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell-size')) || 45;
+
+            p.style.left = (startX * cellSize + 15) + 'px';
+            p.style.top = (startY * cellSize + 15) + 'px';
+            p.style.width = `calc(${cellSize}px - 6px)`;
+            p.style.height = `calc(${cellSize}px - 6px)`;
 
             document.getElementById('game-container').appendChild(p);
 
@@ -508,10 +510,10 @@
             const maxX = Math.max(startX, endX);
             const maxY = Math.max(startY, endY);
 
-            p.style.left = (minX * 45 + 15) + 'px';
-            p.style.top = (minY * 45 + 15) + 'px';
-            p.style.width = ((maxX - minX) * 45 + 39) + 'px';
-            p.style.height = ((maxY - minY) * 45 + 39) + 'px';
+            p.style.left = (minX * cellSize + 15) + 'px';
+            p.style.top = (minY * cellSize + 15) + 'px';
+            p.style.width = ((maxX - minX) * cellSize + (cellSize - 6)) + 'px';
+            p.style.height = ((maxY - minY) * cellSize + (cellSize - 6)) + 'px';
 
             setTimeout(() => {
                 p.style.opacity = '0';
@@ -536,22 +538,29 @@
             const style = window.getComputedStyle(blockEl);
             const left = parseFloat(style.left);
             const top = parseFloat(style.top);
+            const cellSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell-size')) || 45;
+            const blockCenter = (cellSize - 6) / 2;
+            const blockSize = (cellSize - 6);
 
             for (let i = 0; i < 8; i++) {
                 const p = document.createElement('div');
                 p.classList.add('impact-particle');
                 p.style.backgroundColor = color === 'red' ? '#ff6b6b' : (color === 'blue' ? '#54a0ff' : '#2ecc71');
 
-                let startX = left + 19.5;
-                let startY = top + 19.5;
+                const pSize = cellSize * 0.35;
+                p.style.width = pSize + 'px';
+                p.style.height = pSize + 'px';
 
-                if (dx === 1) startX = left + 39;
+                let startX = left + blockCenter;
+                let startY = top + blockCenter;
+
+                if (dx === 1) startX = left + blockSize;
                 else if (dx === -1) startX = left;
-                else if (dy === 1) startY = top + 39;
+                else if (dy === 1) startY = top + blockSize;
                 else if (dy === -1) startY = top;
 
-                p.style.left = (startX - 8) + 'px';
-                p.style.top = (startY - 8) + 'px';
+                p.style.left = (startX - pSize / 2) + 'px';
+                p.style.top = (startY - pSize / 2) + 'px';
 
                 document.getElementById('game-container').appendChild(p);
 
@@ -675,8 +684,15 @@
 
             const rows = levelData.length;
             const cols = levelData[0].length;
-            boardEl.style.gridTemplateColumns = `repeat(${cols}, 45px)`;
-            boardEl.style.gridTemplateRows = `repeat(${rows}, 45px)`;
+
+            // Calculate responsive cell size
+            const availableWidth = window.innerWidth - 40; // 40px for padding
+            const availableHeight = window.innerHeight - 250; // space for header/controls
+            let cellSize = Math.min(45, availableWidth / cols, availableHeight / rows);
+            document.documentElement.style.setProperty('--cell-size', `${cellSize}px`);
+
+            boardEl.style.gridTemplateColumns = `repeat(${cols}, var(--cell-size))`;
+            boardEl.style.gridTemplateRows = `repeat(${rows}, var(--cell-size))`;
 
             hasRed = false;
             hasBlue = false;
@@ -741,17 +757,18 @@
         }
 
         function updateBlocks() {
+            const cellSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell-size')) || 45;
             if (hasRed) {
-                blockRedEl.style.left = (redPos.x * 45 + 15) + 'px';
-                blockRedEl.style.top = (redPos.y * 45 + 15) + 'px';
+                blockRedEl.style.left = (redPos.x * cellSize + 15) + 'px';
+                blockRedEl.style.top = (redPos.y * cellSize + 15) + 'px';
             }
             if (hasBlue) {
-                blockBlueEl.style.left = (bluePos.x * 45 + 15) + 'px';
-                blockBlueEl.style.top = (bluePos.y * 45 + 15) + 'px';
+                blockBlueEl.style.left = (bluePos.x * cellSize + 15) + 'px';
+                blockBlueEl.style.top = (bluePos.y * cellSize + 15) + 'px';
             }
             if (hasGreen) {
-                blockGreenEl.style.left = (greenPos.x * 45 + 15) + 'px';
-                blockGreenEl.style.top = (greenPos.y * 45 + 15) + 'px';
+                blockGreenEl.style.left = (greenPos.x * cellSize + 15) + 'px';
+                blockGreenEl.style.top = (greenPos.y * cellSize + 15) + 'px';
             }
         }
 
