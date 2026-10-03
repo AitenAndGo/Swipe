@@ -2025,22 +2025,18 @@
 
             let playerProgress = JSON.parse(sessionStorage.getItem('swipeProgress')) || {};
 
-            // Calculate progress for World 1 (levels 0-20 = 63 stars max)
             let w1Stars = 0;
             for (let i = 0; i < 21; i++) w1Stars += (playerProgress[i] || 0);
             document.getElementById('w1-progress').textContent = `${w1Stars}/63 Stars`;
 
-            // Calculate progress for World 2 (levels 21-41 = 63 stars max)
             let w2Stars = 0;
             for (let i = 21; i < 42; i++) w2Stars += (playerProgress[i] || 0);
             document.getElementById('w2-progress').textContent = `${w2Stars}/63 Stars`;
 
-            // Calculate progress for World 3 (levels 42-62 = 63 stars max)
             let w3Stars = 0;
             for (let i = 42; i < 63; i++) w3Stars += (playerProgress[i] || 0);
             document.getElementById('w3-progress').textContent = `${w3Stars}/63 Stars`;
 
-            // Lock World 2 if World 1 stars < 42
             const w2Card = document.getElementById('world-card-2');
             const w2Subtitle = document.getElementById('w2-subtitle');
             if (!DEV_UNLOCK_ALL && w1Stars < 42) {
@@ -2051,7 +2047,6 @@
                 w2Subtitle.textContent = `3 Blocks - Advanced`;
             }
 
-            // Lock World 3 if World 2 stars < 42
             const w3Card = document.getElementById('world-card-3');
             const w3Subtitle = document.getElementById('w3-subtitle');
             if (!DEV_UNLOCK_ALL && w2Stars < 42) {
