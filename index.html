@@ -381,6 +381,43 @@
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
+        .level-grid {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .btn-level {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background: #2c3e50;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border: 2px solid #34495e;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-level:hover {
+            background: #3498db;
+            border-color: #2980b9;
+            transform: scale(1.1);
+        }
+
+        .btn-level.world-2:hover {
+            background: #2ecc71;
+            border-color: #27ae60;
+        }
+
+        .btn-menu {
+            background-color: #f39c12;
+            color: white;
+        }
     </style>
 </head>
 
@@ -405,6 +442,7 @@
         <button class="btn btn-green" id="btn-green" onclick="setActiveColor('green')" style="display:none;">Play
             Green</button>
         <button class="btn btn-restart" onclick="initLevel()">Restart Level</button>
+        <button class="btn btn-menu" onclick="showMainMenu()">Menu</button>
     </div>
 
     <div id="win-modal" class="modal">
@@ -425,7 +463,25 @@
             <h2 style="color: #f1c40f; font-size: 32px; margin-bottom: 20px;">🏆 YOU WIN! 🏆</h2>
             <p>Congratulations, you have completed all levels!</p>
             <br>
-            <button class="btn btn-blue" onclick="restartGame()">Play Again</button>
+            <button class="btn btn-blue" onclick="showMainMenu()">Main Menu</button>
+        </div>
+    </div>
+
+    <div id="main-menu" class="modal show" style="background: rgba(15, 32, 39, 0.98); z-index: 200;">
+        <div class="modal-content" style="max-width: 500px; transform: scale(1); opacity: 1;">
+            <h1 style="font-size: 36px; margin-bottom: 20px; color: #ecf0f1;">Level Select</h1>
+            <div class="world-section">
+                <h2 style="color: #3498db; font-size: 20px; margin-bottom: 10px;">World 1 (2 Blocks)</h2>
+                <div class="level-grid" id="world-1-levels">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            <div class="world-section" style="margin-top: 20px;">
+                <h2 style="color: #2ecc71; font-size: 20px; margin-bottom: 10px;">World 2 (3 Blocks)</h2>
+                <div class="level-grid" id="world-2-levels">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -961,13 +1017,44 @@
 
         // Resize support for mobile rotation
         window.addEventListener('resize', () => {
-            if (!isMoving) {
+            const mainMenu = document.getElementById('main-menu');
+            if (!isMoving && (!mainMenu || mainMenu.style.display === 'none')) {
                 initLevel();
             }
         });
 
-        // Start game
-        initLevel();
+        function showMainMenu() {
+            document.getElementById('win-modal').classList.remove('show');
+            document.getElementById('victory-modal').classList.remove('show');
+            document.getElementById('main-menu').style.display = 'flex';
+
+            // Generate level buttons
+            const world1Container = document.getElementById('world-1-levels');
+            const world2Container = document.getElementById('world-2-levels');
+
+            world1Container.innerHTML = '';
+            world2Container.innerHTML = '';
+
+            levels.forEach((level, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-level' + (index >= 3 ? ' world-2' : '');
+                btn.textContent = index + 1;
+                btn.onclick = () => {
+                    currentLevelIndex = index;
+                    document.getElementById('main-menu').style.display = 'none';
+                    initLevel();
+                };
+
+                if (index < 3) {
+                    world1Container.appendChild(btn);
+                } else {
+                    world2Container.appendChild(btn);
+                }
+            });
+        }
+
+        // Start game with menu
+        showMainMenu();
     </script>
 </body>
 
