@@ -1844,6 +1844,29 @@
 
         function nextLevel() {
             document.getElementById('win-modal').classList.remove('show');
+            
+            let playerProgress = JSON.parse(sessionStorage.getItem('swipeProgress')) || {};
+            
+            if (currentLevelIndex === 20 && !DEV_UNLOCK_ALL) {
+                let w1Stars = 0;
+                for (let i = 0; i < 21; i++) w1Stars += (playerProgress[i] || 0);
+                if (w1Stars < 42) {
+                    showMainMenu();
+                    showWorldsView();
+                    return;
+                }
+            }
+            
+            if (currentLevelIndex === 41 && !DEV_UNLOCK_ALL) {
+                let w2Stars = 0;
+                for (let i = 21; i < 42; i++) w2Stars += (playerProgress[i] || 0);
+                if (w2Stars < 42) {
+                    showMainMenu();
+                    showWorldsView();
+                    return;
+                }
+            }
+
             currentLevelIndex++;
             if (currentLevelIndex >= levels.length) {
                 setTimeout(() => {
